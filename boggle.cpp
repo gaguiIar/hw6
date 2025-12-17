@@ -91,9 +91,43 @@ std::set<std::string> boggle(const std::set<std::string>& dict, const std::set<s
 	return result;
 }
 
-bool boggleHelper(const std::set<std::string>& dict, const std::set<std::string>& prefix, const std::vector<std::vector<char> >& board, 
-								   std::string word, std::set<std::string>& result, unsigned int r, unsigned int c, int dr, int dc)
+bool boggleHelper(const std::set<std::string>& dict,
+                  const std::set<std::string>& prefix,
+                  const std::vector<std::vector<char> >& board,
+                  std::string word,
+                  std::set<std::string>& result,
+                  unsigned int r,
+                  unsigned int c,
+                  int dr,
+                  int dc)
 {
-//add your solution here!
+    if (r >= board.size() || c >= board[r].size()) {
+        return false;
+    }
 
+    word += board[r][c];
+
+    const bool is_word   = (dict.find(word) != dict.end());
+    const bool is_prefix = (prefix.find(word) != prefix.end());
+
+    if (!(is_word || is_prefix)) {
+        return false;
+    }
+
+    int nextR = static_cast<int>(r) + dr;
+    int nextC = static_cast<int>(c) + dc;
+
+    bool extended = false;
+    if (nextR >= 0 && nextC >= 0) {
+        extended = boggleHelper(dict, prefix, board, word, result,
+                                static_cast<unsigned int>(nextR),
+                                static_cast<unsigned int>(nextC),
+                                dr, dc);
+    }
+
+    if (is_word && !extended) {
+        result.insert(word);
+    }
+
+    return (is_word || extended);
 }
